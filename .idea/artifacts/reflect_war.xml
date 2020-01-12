@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="reflect:war">
+    <output-path>$PROJECT_DIR$/../reflect/target</output-path>
+    <root id="archive" name="reflect.war">
+      <element id="artifact" artifact-name="reflect:war exploded" />
+    </root>
+  </artifact>
+</component>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 为这个mapper指定一个唯一的namespace，namespace的值习惯上设置成包名+sql映射文件名，这样就能够保证namespace的值是唯一的
+	例如namespace="com.szh.mapper.personMapper"就是com.szh.mapper(包名)+personMapper(personMapper.xml文件去除后缀) -->
+<mapper namespace="com.fh.mapper.ProductSkuMapper">
+
+     <insert id="batchAddProductSku" parameterType="java.util.List">
+         insert into t_product_sku(
+              productId,properties,price,stock
+         )values
+         <foreach collection="list" item="sku" separator=",">
+         (#{sku.productId},#{sku.properties},#{sku.price},#{sku.stock})
+         </foreach>
+     </insert>
+
+    <select id="queryProductSkuListByProductId" parameterType="int" resultType="ProductSku">
+        select * from t_product_sku where productId = #{productId}
+    </select>
+
+    <delete id="deleteProductSkuByProductId" parameterType="int">
+        delete from t_product_sku where productId = #{productId}
+    </delete>
+
+    <delete id="deleteSkuByProductId" parameterType="int">
+        delete from t_product_sku where productId = #{id}
+    </delete>
+
+    <delete id="batchDeleteSkuByProductId" parameterType="java.util.List">
+        delete from t_product_sku
+        where productId in
+        <foreach collection="list" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+
+</mapper>

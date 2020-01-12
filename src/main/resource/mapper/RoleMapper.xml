@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 为这个mapper指定一个唯一的namespace，namespace的值习惯上设置成包名+sql映射文件名，这样就能够保证namespace的值是唯一的
+	例如namespace="com.szh.mapper.personMapper"就是com.szh.mapper(包名)+personMapper(personMapper.xml文件去除后缀) -->
+<mapper namespace="com.fh.mapper.RoleMapper">
+
+    <sql id="whereSql">
+        <where>
+            <if test=" name != null and name != '' ">
+                and name like concat('%',#{name},'%')
+            </if>
+            <if test=" status != null and status != -1">
+                and status =#{status}
+            </if>
+            <if test=" minCreateDate != null ">
+                <![CDATA[
+                and createDate >= #{minCreateDate}
+                ]]>
+            </if>
+            <if test=" maxCreateDate != null ">
+                <![CDATA[
+                and createDate <= #{maxCreateDate}
+                ]]>
+            </if>
+            <if test=" minUpdateDate != null ">
+                <![CDATA[
+                and updateDate >= #{minUpdateDate}
+                ]]>
+            </if>
+            <if test=" maxUpdateDate != null ">
+                <![CDATA[
+                and updateDate <= #{maxUpdateDate}
+                ]]>
+            </if>
+        </where>
+    </sql>
+
+    <select id="queryRoleList" parameterType="roleQuery" resultType="role">
+        select * from t_role
+        <include refid="whereSql"></include>
+        limit #{start},#{length}
+    </select>
+
+
+    <select id="queryRoleCount" parameterType="roleQuery" resultType="long">
+        select count(*) from t_role
+        <include refid="whereSql"></include>
+    </select>
+
+    <insert id="addRole" parameterType="role" useGeneratedKeys="true" keyProperty="id">
+        insert into t_role(name,status,remark,createDate)
+        values (#{name},#{status},#{remark},#{createDate})
+    </insert>
+
+    <update id="updateRole" parameterType="role">
+        update t_role set
+            name=#{name},status=#{status},remark=#{remark},updateDate=#{updateDate}
+        where id=#{id}
+    </update>
+
+    <select id="getRoleById" parameterType="int" resultType="role">
+        select * from t_role where id = #{id}
+    </select>
+
+    <delete id="deleteRole" parameterType="int">
+        delete from t_role where id = #{id}
+    </delete>
+
+
+    <delete id="batchDeleteRole" parameterType="java.util.List">
+        delete from t_role where id in
+        <foreach collection="list" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!--修改角色状态-->
+    <update id="updateRoleStatus">
+        update t_role set
+          status=#{status}
+        where id = #{id}
+    </update>
+
+    <!-- 查询所有启用的角色 -->
+    <select id="queryEnableRoleList" resultType="role">
+        select * from t_role where status = 1
+    </select>
+
+    <!-- 查询所有角色集合用于导入导出测试 -->
+    <select id="queryAllRoleList" resultType="role">
+        select * from t_role
+    </select>
+
+    <!-- 查询全部符合条件的角色数据 -->
+    <select id="queryRoleListNoPage" parameterType="RoleQuery" resultType="Role">
+        select * from t_role
+        <include refid="whereSql" />
+        order by createDate desc
+    </select>
+
+    <insert id="batchAddRole" parameterType="java.util.List">
+        insert into t_role(name,status,remark,createDate)
+        values
+        <foreach collection="list" item="role" separator=",">
+            (#{role.name},#{role.status},#{role.remark},sysdate())
+        </foreach>
+    </insert>
+
+</mapper>

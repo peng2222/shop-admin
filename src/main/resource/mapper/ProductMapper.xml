@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 为这个mapper指定一个唯一的namespace，namespace的值习惯上设置成包名+sql映射文件名，这样就能够保证namespace的值是唯一的
+	例如namespace="com.szh.mapper.personMapper"就是com.szh.mapper(包名)+personMapper(personMapper.xml文件去除后缀) -->
+<mapper namespace="com.fh.mapper.ProductMapper">
+
+    <sql id="whereSql">
+        <where>
+            <if test=" name != null and name != '' ">
+                and tp.name like concat('%',#{name},'%')
+            </if>
+            <if test=" status != null ">
+                and status =#{status}
+            </if>
+        </where>
+    </sql>
+
+    <insert id="addProduct" parameterType="product" useGeneratedKeys="true" keyProperty="id">
+        insert into t_product(
+           name,title,brandId,status,isHot,price,remark,
+           classifyId1,classifyId2,classifyId3,filePath
+        )
+        values (
+           #{name},#{title},#{brandId},#{status},
+           #{isHot},#{price},#{remark},#{classifyId1},
+           #{classifyId2},#{classifyId3},#{filePath}
+        )
+    </insert>
+
+    <select id="queryProductCount" parameterType="productQuery" resultType="long">
+        select count(*) from t_product tp
+        <include refid="whereSql"></include>
+    </select>
+
+    <select id="queryProductList" parameterType="productQuery" resultType="product">
+        select tp.*,tb.name 'brandName' from t_product tp left join t_brand
+        tb on tp.brandId = tb.id
+        <include refid="whereSql"></include>
+        limit #{start},#{length}
+    </select>
+
+    <delete id="deleteProduct" parameterType="int">
+        delete from t_product where id = #{id}
+    </delete>
+
+    <delete id="batchDeleteProduct" parameterType="java.util.List">
+        delete from t_product
+        where id in
+        <foreach collection="list" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="getProductById" parameterType="int" resultType="Product">
+        select * from t_product where id = #{id}
+    </select>
+
+    <update id="updateProduct" parameterType="Product">
+        update t_product set
+        name=#{name},title=#{title},brandId=#{brandId},isHot=#{isHot},status=#{status},
+        price=#{price},remark=#{remark},classifyId1=#{classifyId1},
+        classifyId2=#{classifyId2},classifyId3=#{classifyId3},filePath=#{filePath}
+        where id = #{id}
+    </update>
+
+</mapper>

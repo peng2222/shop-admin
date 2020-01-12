@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 为这个mapper指定一个唯一的namespace，namespace的值习惯上设置成包名+sql映射文件名，这样就能够保证namespace的值是唯一的
+	例如namespace="com.szh.mapper.personMapper"就是com.szh.mapper(包名)+personMapper(personMapper.xml文件去除后缀) -->
+<mapper namespace="com.fh.mapper.UserRoleMapper">
+
+    <insert id="addUserRoles" parameterType="java.util.List">
+        insert into t_user_role(userId,roleId) values
+        <foreach collection="list" item="sss" separator=",">
+            (#{sss.userId},#{sss.roleId})
+        </foreach>
+    </insert>
+
+    <select id="queryUserRoleListByUserId" parameterType="int" resultType="UserRole">
+      select * from t_user_role
+      where userId = #{userId}
+    </select>
+
+    <delete id="deleteUserRoleByUserId" parameterType="int">
+      delete from t_user_role where userId = #{aaa}
+    </delete>
+
+</mapper>

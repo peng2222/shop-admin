@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 为这个mapper指定一个唯一的namespace，namespace的值习惯上设置成包名+sql映射文件名，这样就能够保证namespace的值是唯一的
+	例如namespace="com.szh.mapper.personMapper"就是com.szh.mapper(包名)+personMapper(personMapper.xml文件去除后缀) -->
+<mapper namespace="com.fh.mapper.PermissionMapper">
+
+    <!-- 查询所有权限 -->
+    <select id="queryPermissionList" resultType="Permission">
+        select * from t_permission
+    </select>
+
+    <!-- 新增权限 -->
+    <insert id="addPermission" parameterType="Permission">
+        <selectKey keyProperty="id" order="AFTER" resultType="int">
+          select last_insert_id()
+        </selectKey>
+        insert into t_permission(name,url,pid,type,createDate)
+        values (#{name},#{url},#{pid},#{type},#{createDate})
+    </insert>
+
+    <!-- 删除权限 -->
+    <delete id="deletePermission" parameterType="java.util.List">
+        delete from t_permission where id in
+        <foreach collection="list" item="id" open="(" close=")" separator=",">
+          #{id}
+        </foreach>
+    </delete>
+
+    <!-- 修改权限 -->
+    <update id="updatePermission" parameterType="Permission">
+        update t_permission set 
+        name=#{name},url=#{url},type=#{type},updateDate=#{updateDate}
+        where id = #{id}
+    </update>
+
+    <!-- 查询当前登录用户所拥有的权限集合 -->
+    <select id="queryPermissionListByUserId" parameterType="int" resultType="permission">
+        select distinct tp.* from t_user_role tur
+        left join t_role_permission trp on tur.roleId = trp.roleId
+        left join t_permission tp on trp.permissionId = tp.id
+        where tur.userId = #{id}
+    </select>
+
+    <!-- 查询当前登录用户所用的菜单权限集合 -->
+    <select id="queryMenuPermissionListByUserId" parameterType="int" resultType="permission">
+        select distinct tp.* from t_user_role tur
+        left join t_role_permission trp on tur.roleId = trp.roleId
+        left join t_permission tp on trp.permissionId = tp.id
+        where tur.userId = #{id} and tp.type = 1
+    </select>
+
+</mapper>

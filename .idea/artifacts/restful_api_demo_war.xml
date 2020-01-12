@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="restful-api-demo:war">
+    <output-path>$PROJECT_DIR$/../restful-api-demo/target</output-path>
+    <root id="archive" name="restful-api-demo.war">
+      <element id="artifact" artifact-name="restful-api-demo:war exploded" />
+    </root>
+  </artifact>
+</component>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 为这个mapper指定一个唯一的namespace，namespace的值习惯上设置成包名+sql映射文件名，这样就能够保证namespace的值是唯一的
+	例如namespace="com.szh.mapper.personMapper"就是com.szh.mapper(包名)+personMapper(personMapper.xml文件去除后缀) -->
+<mapper namespace="com.fh.mapper.ProductAttributeMapper">
+
+    <insert id="batchAddProductAttribute" parameterType="java.util.List">
+        insert into t_product_attribute(
+             attributeId,attributeName,valueId,value,productId,isSku
+        )values
+        <foreach collection="list" item="attribute" separator=",">
+            (#{attribute.attributeId},#{attribute.attributeName},
+            #{attribute.valueId},#{attribute.value},
+            #{attribute.productId},#{attribute.isSku})
+        </foreach>
+
+    </insert>
+
+    <!-- 根据id查询 回显-->
+    <select id="queryProductAttributeListByProductId" parameterType="int" resultType="ProductAttribute">
+        select * from t_product_attribute where productId = #{productId}
+    </select>
+
+    <!-- 根据商品id删除对应的商品属性 -->
+    <delete id="deleteProductAttributeByProductId" parameterType="int">
+        delete from t_product_attribute where productId = #{productId}
+    </delete>
+
+    <delete id="deleteAttributeByProductId" parameterType="int">
+        delete from t_product_attribute where productId = #{id}
+    </delete>
+
+    <delete id="batchDeleteAttributeByProductId" parameterType="java.util.List">
+        delete from t_product_attribute
+        where productId in
+        <foreach collection="list" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

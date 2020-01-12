@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 为这个mapper指定一个唯一的namespace，namespace的值习惯上设置成包名+sql映射文件名，这样就能够保证namespace的值是唯一的
+	例如namespace="com.szh.mapper.personMapper"就是com.szh.mapper(包名)+personMapper(personMapper.xml文件去除后缀) -->
+<mapper namespace="com.fh.mapper.AttributeMapper">
+
+    <sql id="whereSql">
+        <where>
+            <!-- 商品品类 -->
+            <if test="classifyId != null">
+                and classifyId = #{classifyId}
+            </if>
+            <if test="name != null">
+                and name like concat('%',#{name},'%')
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="selectType != null">
+                and selectType = #{selectType}
+            </if>
+            <if test="inputType != null">
+                and inputType = #{inputType}
+            </if>
+            <if test="addable != null">
+                and addable = #{addable}
+            </if>
+        </where>
+    </sql>
+
+    <!-- 查询总条数 -->
+    <select id="queryAttributeCount" parameterType="AttributeQuery" resultType="long">
+      select count(*) from t_attribute
+      <include refid="whereSql" />
+    </select>
+
+    <!-- 查询当前页数据 -->
+    <select id="queryAttributeList" parameterType="AttributeQuery" resultType="Attribute">
+      select * from t_attribute
+      <include refid="whereSql" />
+      limit #{start},#{length}
+    </select>
+
+    <!-- 新增属性 -->
+    <insert id="addAttribute" parameterType="Attribute" useGeneratedKeys="true" keyProperty="id">
+      insert into t_attribute(name,type,selectType,inputType,addable,classifyId)
+      values (#{name},#{type},#{selectType},#{inputType},#{addable},#{classifyId})
+    </insert>
+
+    <!-- 通过id获取单个属性信息 -->
+    <select id="getAttributeById" parameterType="int" resultType="Attribute">
+        select * from t_attribute where id = #{id}
+    </select>
+
+    <!-- 修改属性 -->
+    <update id="updateAttribute" parameterType="Attribute">
+      update t_attribute set
+      name=#{name},type=#{type},selectType=#{selectType},inputType=#{inputType},addable=#{addable}
+      where id = #{id}
+    </update>
+
+    <!-- 删除属性 -->
+    <delete id="deleteAttribute" parameterType="int">
+      delete from t_attribute where id = #{id}
+    </delete>
+
+    <!-- 批量删除属性 -->
+    <delete id="batchDeleteAttribute" parameterType="java.util.List">
+        delete from t_attribute where id in
+        <foreach collection="list" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 通过分类id查询该分类下所有的属性 -->
+    <select id="queryAttributeListByClassifyId" parameterType="int" resultType="Attribute">
+        select  ta.*,GROUP_CONCAT(tav.value)
+        as inputList,cast(GROUP_CONCAT(tav.id) as char) as valueIdList
+        from t_attribute ta
+        left join t_attribute_value tav on ta.id = tav.attributeId
+        where ta.classifyId =#{classifyId}
+        group by ta.id
+    </select>
+
+</mapper>

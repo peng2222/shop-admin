@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="js/vue.js"></script>
+    <style>
+        .abc{
+            color: red;
+        }
+
+        .def{
+            color: green;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <div v-bind:class="1>2?'abc':'def'">
+         张旭浩
+    </div>
+</div>
+</body>
+<script>
+    var app = new Vue({
+        //el其实就是element的缩写
+        el:"#app",
+        data:{
+            sex:"",
+            message:"欢迎来到张旭浩的世界",
+            studentName:"张旭浩",
+            studentList:[
+                "张旭浩",
+                "高天",
+                "李嘉欣",
+                "马云",
+            ],
+            aaa:false,
+        },
+        methods:{
+            test1:function(){
+                alert("我是第一个div");
+            },
+            test2:function () {
+                alert("我是第二个div");
+            },
+            test3:function () {
+                alert("我是第三个div");
+            },
+            login:function () {
+                alert("开始登录了！");
+            },
+            show:function () {
+                this.aaa = true;
+            },
+            hide:function () {
+                this.aaa = false;
+            }
+        }
+    })
+
+</script>
+</html>

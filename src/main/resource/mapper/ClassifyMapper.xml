@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 为这个mapper指定一个唯一的namespace，namespace的值习惯上设置成包名+sql映射文件名，这样就能够保证namespace的值是唯一的
+	例如namespace="com.szh.mapper.personMapper"就是com.szh.mapper(包名)+personMapper(personMapper.xml文件去除后缀) -->
+<mapper namespace="com.fh.mapper.ClassifyMapper">
+
+    <!-- 查询所有分类 -->
+    <select id="queryClassifyList" resultType="Classify">
+        select * from t_category
+    </select>
+
+    <!-- 新增分类 -->
+    <insert id="addClassify" parameterType="Classify">
+        <selectKey keyProperty="id" order="AFTER" resultType="int">
+          select last_insert_id()
+        </selectKey>
+        insert into t_category(name,pid,createDate)
+        values (#{name},#{pid},#{createDate})
+    </insert>
+
+    <!-- 删除分类 -->
+    <delete id="deleteClassify" parameterType="java.util.List">
+        delete from t_category where id in
+        <foreach collection="list" item="id" open="(" close=")" separator=",">
+          #{id}
+        </foreach>
+    </delete>
+
+    <!-- 修改分类 -->
+    <update id="updateClassify" parameterType="Classify">
+        update t_category set 
+        name=#{name},updateDate=#{updateDate}
+        where id = #{id}
+    </update>
+
+    <!-- 根据Pid查询所有分类 -->
+    <select id="queryClassifyListByPid" parameterType="int" resultType="Classify">
+        select * from t_category where pid = #{pid}
+    </select>
+
+</mapper>

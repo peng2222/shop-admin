@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 为这个mapper指定一个唯一的namespace，namespace的值习惯上设置成包名+sql映射文件名，这样就能够保证namespace的值是唯一的
+	例如namespace="com.szh.mapper.personMapper"就是com.szh.mapper(包名)+personMapper(personMapper.xml文件去除后缀) -->
+<mapper namespace="com.fh.mapper.UserMapper">
+
+    <sql id="whereSql">
+        <!--
+              作用:1.自动在SQL语句后拼上where关键字
+                   2.自动去掉第一个查询条件前面的and
+          -->
+        <where>
+            <if test="userName != null and userName != '' ">
+                and userName like concat('%',#{userName},'%')
+            </if>
+            <if test="realName != null and realName != '' ">
+                and realName like concat('%',#{realName},'%')
+            </if>
+            <if test="phoneNumber != null and phoneNumber != '' ">
+                and phoneNumber like concat('%',#{phoneNumber},'%')
+            </if>
+            <if test="email != null and email != '' ">
+                and email like concat('%',#{email},'%')
+            </if>
+            <if test="sex != null ">
+                and sex =#{sex}
+            </if>
+            <if test="minBirthday != null">
+                <![CDATA[
+              and birthday >= #{minBirthday}
+              ]]>
+            </if>
+            <if test="maxBirthday != null">
+                <![CDATA[
+              and birthday <= #{maxBirthday}
+              ]]>
+            </if>
+            <if test="minCreateDate != null ">
+                <![CDATA[
+              and createDate >= #{minCreateDate}
+              ]]>
+            </if>
+            <if test="maxCreateDate != null ">
+                <![CDATA[
+              and createDate <= #{maxCreateDate}
+              ]]>
+            </if>
+            <if test="minUpdateDate != null ">
+                <![CDATA[
+              and updateDate >= #{minUpdateDate}
+              ]]>
+            </if>
+            <if test="maxUpdateDate != null ">
+                <![CDATA[
+              and updateDate <= #{maxUpdateDate}
+              ]]>
+            </if>
+        </where>
+    </sql>
+
+
+    <select id="queryUserList" parameterType="userQuery" resultType="user">
+        select * from t_user
+        <include refid="whereSql"></include>
+        limit #{start},#{length}
+    </select>
+
+
+    <select id="queryUserCount" parameterType="userQuery" resultType="long">
+        select count(*) from t_user
+        <include refid="whereSql"></include>
+    </select>
+
+    <insert id="addUser" parameterType="user" useGeneratedKeys="true" keyProperty="id">
+        insert into t_user(realName,userName,passWord,
+                            email,sex,phoneNumber,filePath,birthday,createDate
+                            )
+        VALUES
+        (
+            #{realName},#{userName},#{passWord},
+            #{email},#{sex},#{phoneNumber},#{filePath},#{birthday},#{createDate}
+        )
+    </insert>
+
+    <update id="updateUser" parameterType="user">
+        update t_user set
+            realName=#{realName},userName=#{userName},passWord=#{passWord},
+            email=#{email},sex=#{sex},phoneNumber=#{phoneNumber},filePath=#{filePath},
+            birthday=#{birthday},updateDate=#{updateDate}
+        where id=#{id}
+    </update>
+
+    <select id="getUserById" parameterType="int" resultType="user">
+        select * from t_user where id = #{id}
+    </select>
+
+    <delete id="deleteUser" parameterType="int">
+        delete from t_user where id = #{id}
+    </delete>
+
+    <select id="queryUserListByIds" parameterType="java.util.List" resultType="user">
+        select * from t_user where id in
+        <foreach collection="list" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </select>
+
+    <delete id="batchDeleteUser" parameterType="java.util.List">
+        delete from t_user where id in
+        <foreach collection="list" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!--查询数据库是否有这个账号存在 -->
+    <select id="getUserByName" parameterType="string" resultType="user">
+        select * from t_user where userName=#{userName}
+    </select>
+
+    <!-- 更新用户错误登录时间与次数 -->
+    <update id="updateUserErrorCountAndErrorTime" parameterType="user">
+        update t_user set
+        errorCount = #{errorCount},errorTime = #{errorTime}
+        where id = #{id}
+    </update>
+
+    <!-- 更新用户成功登录时间与次数 -->
+    <update id="updateUserLoginCountAndUserLoginTime" parameterType="user">
+        update t_user set
+        loginCount = #{loginCount},loginTime = #{loginTime}
+        where id = #{id}
+    </update>
+
+    <!-- 按条件查询用户信息 不带分页用于导入导出excel -->
+    <select id="queryUserListNoPage" parameterType="userQuery" resultType="user">
+        select * from t_user
+        <include refid="whereSql"></include>
+    </select>
+
+
+    <insert id="batchAddUser" parameterType="java.util.List">
+        insert into t_user(realName,userName,passWord,
+                            email,sex,phoneNumber,filePath,birthday,createDate,
+                            errorCount,errorTime,loginCount,loginTime
+                            )
+        VALUES
+        <foreach collection="list" item="user" separator=",">
+            (
+                #{user.realName},#{user.userName},#{user.passWord},
+                #{user.email},#{user.sex},#{user.phoneNumber},#{user.filePath},#{user.birthday},sysdate(),
+                #{user.errorCount},#{user.errorTime},#{user.loginCount},#{user.loginTime}
+            )
+        </foreach>
+    </insert>
+
+</mapper>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="freemarker-demo" />
+        <module name="restful-api-demo" />
+        <module name="shop-admin" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="freemarker-demo" target="1.7" />
+      <module name="reflect" target="1.7" />
+      <module name="reflect2" target="1.7" />
+      <module name="restful-api-demo" target="1.8" />
+      <module name="shop-admin" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>
